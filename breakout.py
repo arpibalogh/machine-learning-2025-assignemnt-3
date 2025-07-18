@@ -26,8 +26,7 @@ class BreakoutEnv:
         self.reset()
 
     def default_brick_layout(self):
-        # Simple row of 5 bricks
-        return [(i*3, 1) for i in range(5)]  # Bricks at top row
+        return [(i*3, 1) for i in range(5)]
 
     def reset(self):
         # Reset paddle
@@ -115,5 +114,5 @@ class BreakoutEnv:
 
         # Print the grid
         print("\n".join("".join(row) for row in grid))
-        print("-" * self.width)  # separator
+        print("-" * self.width)
 
