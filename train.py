@@ -6,7 +6,7 @@ import time
 env = BreakoutEnv()
 agent = MonteCarloAgent(actions=[-1, 0, 1], epsilon=0.1, gamma=1.0)
 
-num_episodes = 100000
+num_episodes = 10000
 
 for episode_num in range(num_episodes):
     state = env.reset()
