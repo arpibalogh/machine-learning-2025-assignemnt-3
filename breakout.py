@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 class BreakoutEnv:
-    def __init__(self, width=15, height=10, brick_layout=None):
+    def __init__(self, width=15, height=10, layout_name="default"):
         self.width = width
         self.height = height
 
@@ -20,13 +20,38 @@ class BreakoutEnv:
         self.ball_vy = 1
 
         # Bricks
-        self.brick_layout = brick_layout or self.default_brick_layout()
+        self.layout_name = layout_name
+        self.brick_layout = self.get_layout(layout_name)
         self.bricks = set(self.brick_layout)
 
         self.reset()
 
+    def get_layout(self, name):
+        if name == "rectangle":
+            return self.rectangle_layout()
+        elif name == "triangle":
+            return self.triangle_layout()
+        elif name == "zigzag":
+            return self.zigzag_layout()
+        else:
+            return self.default_brick_layout()
+
     def default_brick_layout(self):
-        return [(i*3, 1) for i in range(5)]
+        return [(i * 3, 1) for i in range(5)]
+
+    def rectangle_layout(self):
+        return [(x * 3, y) for y in range(2) for x in range(4)]
+
+    def triangle_layout(self):
+        layout = []
+        for y in range(3):
+            start_x = (self.width - (y + 1) * 3) // 2
+            for x in range(y + 1):
+                layout.append((start_x + x * 3, y))
+        return layout
+
+    def zigzag_layout(self):
+        return [(i * 3, i % 2) for i in range(5)]
 
     def reset(self):
         # Reset paddle
@@ -75,7 +100,6 @@ class BreakoutEnv:
 
         # Check for paddle hit
         if self.ball_y == self.paddle_y and self.paddle_x <= self.ball_x < self.paddle_x + self.paddle_width:
-            # Adjust ball_vx based on where it hit
             index = self.ball_x - self.paddle_x
             self.ball_vx = [-2, -1, 0, 1, 2][index]
             self.ball_vy = -1
@@ -88,31 +112,24 @@ class BreakoutEnv:
         return self.get_state(), reward, done
 
     def get_state(self):
-        # You can customize this later
         return (self.ball_x, self.ball_y, self.ball_vx, self.ball_vy,
                 self.paddle_x, self.paddle_speed, tuple(sorted(self.bricks)))
-    
+
     def render(self):
-        # Create empty grid
         grid = [[" " for _ in range(self.width)] for _ in range(self.height)]
 
-        # Draw bricks
         for (bx, by) in self.bricks:
-            for i in range(3):  # each brick is 3 tiles wide
+            for i in range(3):
                 if 0 <= bx + i < self.width:
                     grid[by][bx + i] = "#"
 
-        # Draw paddle
         for i in range(self.paddle_width):
             px = self.paddle_x + i
             if 0 <= px < self.width:
                 grid[self.paddle_y][px] = "="
 
-        # Draw ball
         if 0 <= self.ball_y < self.height and 0 <= self.ball_x < self.width:
             grid[self.ball_y][self.ball_x] = "O"
 
-        # Print the grid
         print("\n".join("".join(row) for row in grid))
         print("-" * self.width)
-
