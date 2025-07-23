@@ -20,7 +20,8 @@ for layout in layouts:
     while not done and steps < 100:
         env.render()
         time.sleep(0.2)
-        action = agent.choose_action(state)  # Just picks based on Q-values (random at start)
+        
+        ed on Q-values (random at start)
         state, reward, done = env.step(action)
         steps += 1
 
